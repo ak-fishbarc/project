@@ -1,0 +1,37 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RESTaurant App</title>
+</head>
+<body>
+    <p>This is just to signify difference</p>
+    <p>Hello {{ name }}, how are you today? </p>
+    <form action="/add_article" method="POST">
+        <input type="text" name="article">
+        <input type="submit" value="Write">
+    </form>
+    <p> List of Articles</p>
+    <table border = 1>
+    {% for article_object in article_objects %}
+    <tr>
+        <th> {{ article_object.author }} </th>
+    </tr>
+        <tr>
+            <td> {{ article_object.article }} </td>
+        </tr>
+        <tr>
+            <td> {{ article_object.timestamp }} </td>
+        </tr>
+        {% if article_object.author == session['username'] %}
+        <tr>
+            <td>
+                <a href="{{ url_for('delete_article', id=article_object.id)}}"> Delete Article </a>
+        </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+
+    </table>
+</body>
+</html>

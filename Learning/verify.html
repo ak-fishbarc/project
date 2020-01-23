@@ -1,0 +1,55 @@
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RESTaurant App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='verify.css') }}">
+</head>
+<body>
+    <p>Hello {{ name }}, how are you today? </p>
+    <form action="/add_article" method="POST">
+        <textarea rows="5" cols="50" name="article"></textarea>
+        </br>
+        <input type="submit" value="Write">
+    </form>
+    <div class="spreadsheet">
+    <p> List of Articles</p>
+    <table border = 1>
+    {% for article_object in article_objects %}
+    <tr>
+        <th> {{ article_object.author }} </th>
+    </tr>
+        <tr>
+            <td> {{ article_object.article }} </td>
+        </tr>
+        <tr>
+            <td> {{ article_object.timestamp }} </td>
+        </tr>
+        {% if article_object.author == session['username'] %}
+        <tr>
+            <td>
+                <a href="{{ url_for('delete_article', id=article_object.id)}}"> Delete Article </a>
+        </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+
+    </table>
+
+    <table>
+        {% for worker in all_workers %}
+        <tr>
+            <th>{{ worker.Name }}</th>
+        </tr>
+        <tr>
+            <td>
+               {% for position in worker.Position %}
+                 {{ position }}
+               {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+</body>
+</html>
