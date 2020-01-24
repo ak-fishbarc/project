@@ -1,0 +1,15 @@
+.department_spreadsheet{
+border: 1px solid black;
+}
+
+.department_spreadsheet th{
+    border-bottom: 1px solid black;
+    margin: 2px;
+}
+.department_spreadsheet tr{
+    margin: 2px;
+}
+.department_spreadsheet td{
+    text-align: center;
+    margin: 2px;
+}

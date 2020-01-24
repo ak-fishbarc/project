@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='departments.css') }}">
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+        <style>
+            div p{
+            position:relative;
+            top:7%;
+            }
+            select{
+            position:relative;
+            left:70%;
+            bottom:1%;
+            }
+            div{
+            display:inline-block;
+            height: 400px;
+            margin:auto;
+            }
+
+            svg{
+            position:relative;
+            bottom:65%;
+            margin-left:400px;
+
+            }
+            svg rect{
+            fill: orange;
+
+            svg bar text {
+            fill: yellow;
+            font: 12px sans-serif;
+            text-anchor: middle;
+            }
+        </style>
+</head>
+<body>
+    <form action="/add_department" method="POST">
+        <p>Department Name:</p>
+        <input type="text" name="name">
+        <p>Department Workforce:</p>
+        <input type="text" name="workforce">
+        <p>Department Lateness:</p>
+        <input type="text" name="lateness">
+        <p>Department Sickness:</p>
+        <input type="text" name="sickness">
+        <p>Department Accidents:</p>
+        <input type="text" name="accidents">
+        </br>
+        <input type="submit" value="Create Department">
+    </form>
+    <div>
+        <p>Display Charts for each department:</p>
+        <select onchange="chartFunction(value)">
+            <option value="workforce">Show Workforce</option>
+            <option value="lateness">Show Lateness</option>
+            <option value="sickness">Show Sickness</option>
+            <option value="accidents">Show Accidents</option>
+        </select>
+    <table class="department_spreadsheet">
+        {% for department in departments_object %}
+        <tr>
+            <th>Name: {{ department.name }} </th>
+            <th>Workforce: {{ department.workforce }} </th>
+        </tr>
+        <tr>
+            <th>Latness:</th>
+            <th>Sickness:</th>
+            <th>Accidents:</th>
+        </tr>
+        <tr>
+            <td> {{ department.lateness }} </td>
+            <td> {{ department.sickness }} </td>
+            <td> {{ department.accidents }} </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+         <script>
+         var graph_exists = false;
+
+      function chartFunction(value){
+
+        var data_array = {{ departments_prepared|safe }};
+        var data = []
+        for (i = 0; i < data_array.length; i++) {
+        data.push(data_array[i].name + ' ' + value + ':');
+        if (value == 'workforce'){
+            data.push(data_array[i].workforce);
+            }
+        else if (value == 'lateness'){
+            data.push(data_array[i].lateness);
+            }
+        else if (value == 'sickness'){
+            data.push(data_array[i].sickness);
+            }
+        else if (value == 'accidents'){
+            data.push(data_array[i].accidents);
+            }
+        }
+       if (graph_exists == false){
+        graph_exists = true;
+        var width = 200
+            scaleFactor = 5,
+            barHeight = 30;
+
+         var graph = d3.select("div")
+            .append("svg")
+            .attr("width", width * data.length)
+            .attr("height", barHeight * data.length);
+
+         var bar = graph.selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("transform", function(d, i) {
+               return "translate(0," + i * barHeight + ")";
+            });
+         bar.append("rect").attr("width", function(d) {
+            return d * scaleFactor;
+         })
+
+         .attr("height", barHeight - 1);
+
+         bar.append("text")
+            .attr("x", function(d) { return (d * 2); })
+            .attr("y", barHeight / 2)
+            .attr("dy", ".35em")
+            .text(function(d) { return d; });
+        }
+        else if (graph_exists==true){
+            var v = d3.select("svg");
+            v.selectAll("*").remove();
+            var bar = v.selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("transform", function(d, i) {
+               return "translate(0," + i * barHeight + ")";
+            });
+         bar.append("rect").attr("width", function(d) {
+            return d * scaleFactor;
+         })
+
+         .attr("height", barHeight - 1);
+
+         bar.append("text")
+            .attr("x", function(d) { return (d * 2); })
+            .attr("y", barHeight / 2)
+            .attr("dy", ".35em")
+            .text(function(d) { return d; });
+        }
+        }
+    </script>
+    </div>
+
+
+</body>
+
+</html>
