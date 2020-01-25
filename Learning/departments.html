@@ -10,11 +10,13 @@
             position:relative;
             top:7%;
             }
+
             select{
             position:relative;
             left:70%;
             bottom:1%;
             }
+
             div{
             display:inline-block;
             height: 400px;
@@ -29,12 +31,54 @@
             }
             svg rect{
             fill: orange;
-
+            }
             svg bar text {
             fill: yellow;
             font: 12px sans-serif;
             text-anchor: middle;
             }
+
+            .black {
+            fill:none;
+            stroke-width: 3px;
+            stroke: black;
+            }
+            .blue{
+            fill:none;
+            stroke-width: 3px;
+            stroke: blue;
+            }
+            .orange{
+            fill:none;
+            stroke-width: 3px;
+            stroke: orange;
+            }
+            .yellow{
+            fill:none;
+            stroke-width: 3px;
+            stroke: yellow;
+            }
+            .red{
+            fill:none;
+            stroke-width: 3px;
+            stroke: red;
+            }
+            .grey{
+            fill:none;
+            stroke-width: 3px;
+            stroke: grey;
+            }
+            .purple{
+            fill:none;
+            stroke-width: 3px;
+            stroke: purple;
+            }
+            .svg2{
+            position:relative;
+            bottom:65%;
+            margin-left:400px;
+            }
+
         </style>
 </head>
 <body>
@@ -59,6 +103,7 @@
             <option value="lateness">Show Lateness</option>
             <option value="sickness">Show Sickness</option>
             <option value="accidents">Show Accidents</option>
+            <option value="comp_wf_sick">Compare Workforce / Sickness</option>
         </select>
     <table class="department_spreadsheet">
         {% for department in departments_object %}
@@ -101,6 +146,7 @@
             data.push(data_array[i].accidents);
             }
         }
+
        if (graph_exists == false){
         graph_exists = true;
         var width = 200
@@ -153,6 +199,64 @@
             .attr("dy", ".35em")
             .text(function(d) { return d; });
         }
+
+        /*
+        Line Graph
+        */
+        if (value == 'comp_wf_sick'){
+         var v = d3.select("svg");
+         v.selectAll("*").remove();
+         var margin = {top: 20, right: 20, bottom: 30, left: 50},
+         width = 960 - margin.left - margin.right,
+         height = 500 - margin.top - margin.bottom;
+
+         var x = d3.scaleLinear().range([0, width]);
+         var y = d3.scaleLinear().range([height, 0]);
+
+         var svg = d3.select("div").append("svg")
+            .attr('class', 'svg2')
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g").attr("transform",
+               "translate(" + margin.left + "," + margin.top + ")");
+
+            var data2 = [];
+            for (i = 0; i < data_array.length; i++){
+            data2.push({ name: data_array[i].name, workforce: 0, sickness: 0});
+            data2.push({ name: data_array[i].name, workforce: +data_array[i].workforce, sickness: +data_array[i].sickness});
+            }
+            console.log(data2);
+
+            x.domain(d3.extent(data2, function(d) { return d.workforce; }));
+            y.domain([0, d3.max(data2, function(d) { return d.sickness; })]);
+
+            var valueline = d3.line()
+            .x(function(d) { return x(d.workforce); })
+            .y(function(d) { return y(d.sickness); });
+
+            svg.append("g")
+               .attr("transform", "translate(0," + height + ")")
+               .call(d3.axisBottom(x));
+
+            svg.append("g")
+               .call(d3.axisLeft(y));
+
+            var dataGroup = d3.nest()
+            .key(function(d){
+              return d.name;
+              })
+              .entries(data2);
+
+            var color_values = ['black', 'blue', 'orange', 'yellow', 'red', 'grey', 'purple'];
+            var c = 0;
+            dataGroup.forEach(function(d, i){
+            console.log(dataGroup);
+                svg.append("path")
+                   .attr('stroke', color_values[c++])
+                   .attr("d", valueline(d.values));
+                });
+            }
+
         }
     </script>
     </div>
