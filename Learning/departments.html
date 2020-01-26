@@ -29,9 +29,7 @@
             margin-left:400px;
 
             }
-            svg rect{
-            fill: orange;
-            }
+
             svg bar text {
             fill: yellow;
             font: 12px sans-serif;
@@ -103,7 +101,6 @@
             <option value="lateness">Show Lateness</option>
             <option value="sickness">Show Sickness</option>
             <option value="accidents">Show Accidents</option>
-            <option value="comp_wf_sick">Compare Workforce / Sickness</option>
         </select>
     <table class="department_spreadsheet">
         {% for department in departments_object %}
@@ -125,7 +122,7 @@
     </table>
 
          <script>
-         var graph_exists = false;
+             var graph_exists = false;
 
       function chartFunction(value){
 
@@ -165,7 +162,9 @@
             .attr("transform", function(d, i) {
                return "translate(0," + i * barHeight + ")";
             });
-         bar.append("rect").attr("width", function(d) {
+         bar.append("rect")
+         .attr('fill', 'orange')
+         .attr("width", function(d) {
             return d * scaleFactor;
          })
 
@@ -187,7 +186,9 @@
             .attr("transform", function(d, i) {
                return "translate(0," + i * barHeight + ")";
             });
-         bar.append("rect").attr("width", function(d) {
+         bar.append("rect")
+         .attr('fill', 'orange')
+         .attr("width", function(d) {
             return d * scaleFactor;
          })
 
@@ -203,10 +204,8 @@
         /*
         Line Graph
         */
-        if (value == 'comp_wf_sick'){
-         var v = d3.select("svg");
-         v.selectAll("*").remove();
-         var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        if (value == 'sickness'){
+         var margin = {top: 20, right: 20, bottom: 50, left: 50},
          width = 960 - margin.left - margin.right,
          height = 500 - margin.top - margin.bottom;
 
@@ -249,14 +248,30 @@
 
             var color_values = ['black', 'blue', 'orange', 'yellow', 'red', 'grey', 'purple'];
             var c = 0;
+            var z = 0;
+
             dataGroup.forEach(function(d, i){
             console.log(dataGroup);
                 svg.append("path")
-                   .attr('stroke', color_values[c++])
+                   .attr('class', color_values[c++])
                    .attr("d", valueline(d.values));
-                });
-            }
 
+            var lSpace = 400/dataGroup.length;
+            var sSpace = 400/dataGroup.length;
+
+            svg.append('rect')
+            .attr("x", (sSpace*i) + 175)
+            .attr("y", (455))
+            .attr("fill", color_values[z++])
+            .attr("width", 20)
+            .attr("height", 20);
+            svg.append("text")
+                .attr("x", (lSpace*i)+200)
+                .attr("y", 470)
+                .style("fill", 'black')
+                .text(d.key);
+         });
+            }
         }
     </script>
     </div>
