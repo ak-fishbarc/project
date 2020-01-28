@@ -3,6 +3,11 @@ import json
 from flask import Flask, render_template, flash, url_for, request, session, redirect
 from flask_sqlalchemy import SQLAlchemy
 
+import bcrypt
+import random
+import re
+import smtplib
+
 from datetime import date
 
 app = Flask(__name__)
@@ -13,15 +18,30 @@ db = SQLAlchemy(app)
 
 class workers(db.Model):
     __tablename__ = 'workers'
-    Name = db.Column(db.String(200), primary_key=True)
+    id_pk = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(200))
     Position = db.Column(db.String(200))
+    # Wrong data type, needs to be removed.
     Password = db.Column(db.String(200))
+    department = db.Column(db.String(200))
+    lateness = db.Column(db.Integer)
+    sickness = db.Column(db.Integer)
+    accidents = db.Column(db.Integer)
+    email = db.Column(db.String(200))
+    alt_pass = db.Column(db.LargeBinary)
 
-    def __init__(self, Name, Position, Password):
-        self.position = Name
-        self.name = Position
-        self.password = Password
-
+    def __init__(self, Name, Position, Password, department, lateness, sickness,
+                 accidents, email, alt_pass):
+        self.Position = Position
+        self.Name = Name
+        # Wrong data type, needs to be removed.
+        self.Password = Password
+        self.department = department
+        self.lateness = lateness
+        self.sickness = sickness
+        self.accidents = accidents
+        self.email = email
+        self.alt_pass = alt_pass
 
 class articles(db.Model):
     __tablename__ = 'articles'
@@ -48,7 +68,6 @@ class archives(db.Model):
         self.article = article
         self.timestamp = timestamp
 
-# Data visuals
 
 class departments_data(db.Model):
     __tablename__ = 'departments'
@@ -76,13 +95,13 @@ def verify():
         data = request.form
         form_name = (data['name_value'])
         form_password = (data['password'])
-        db_object = workers.query.get(form_name)
+        db_object = workers.query.filter(workers.Name == form_name).first()
         article_objects = articles.query.all()
         if db_object:
-            db_password = db_object.Password
+            db_password = db_object.alt_pass
             db_name = db_object.Name
             db_position = db_object.Position
-            if form_name == db_name and form_password == db_password:
+            if form_name == db_name and bcrypt.checkpw(form_password, db_password):
                 if 'Admin' in db_position:
                     session['username'] = db_name
                     all_workers = workers.query.all()
@@ -96,21 +115,36 @@ def verify():
         else:
             return 'Oops, something went wrong !'
     elif session['username']:
-         db_object = workers.query.get(session['username'])
-         if 'Admin' in db_object.Position:
+        db_object = workers.query.filter(workers.Name == session['username']).first()
+        if 'Admin' in db_object.Position:
             article_objects = articles.query.all()
             all_workers = workers.query.all()
             return render_template('verify.html', name=session['username'], all_workers=all_workers, article_objects=article_objects)
-         else:
+        else:
              article_objects = articles.query.all()
              return render_template('regular.html', name=session['username'], article_objects=article_objects)
     else:
         return 'Oops, something went wrong'
 
+@app.route('/workers_tab', methods=['POST', 'GET'])
+def workers_tab():
+    if session['username']:
+        db_object = workers.query.filter(workers.Name == session['username']).first()
+        if 'Admin' in db_object.Position:
+            workers_object = workers.query.all()
+            return render_template('workers_tab.html', name=session['username'], workers_object=workers_object)
+
+        else:
+            flash('No permission. Please log-in.')
+            return redirect(url_for('index'))
+    else:
+        flash('Something went wrong. Please log-in.')
+        return redirect(url_for('index'))
+
 @app.route('/departmens', methods=['POST', 'GET'])
 def departments():
     if session['username']:
-        db_object = workers.query.get(session['username'])
+        db_object = workers.query.filter(workers.Name == session['username']).first()
         if 'Admin' in db_object.Position:
             departments_object = departments_data.query.all()
             departments_list = []
@@ -152,6 +186,70 @@ def add_departments():
     else:
         return "Oops, something went wrong"
 
+@app.route('/add_worker', methods=['POST', 'GET'])
+def add_worker():
+    if request.method == 'POST':
+        worker_name = request.form['name']
+        worker_position = request.form['position']
+        worker_department = request.form['department']
+        worker_email = request.form['email']
+
+        # Extra validation in case if HTML fails
+
+        validate_email_at = re.search('^@|@$', worker_email)
+        validate_email_dot = re.search("\.", worker_email)
+        validate_email_pattern = re.search('@\.|\.@', worker_email)
+        if not validate_email_at and validate_email_dot \
+        and not validate_email_pattern and len(worker_email) > 3:
+
+            # Password encryption
+
+            passcode = ''
+            signs = 'abcdefghijklmnopqrstuvwxyzABCDFGHIJKLMNOPQRSTUVXYZ1234567890'
+            i = 0
+            while i < 12:
+                passcode += signs[random.randint(0, len(signs) - 1)]
+                i += 1
+            passcode = passcode.encode('utf-8')
+            salt = bcrypt.gensalt()
+            hashed = bcrypt.hashpw(passcode, salt)
+            print(passcode)
+            print(hashed)
+            new_worker = workers(Name=worker_name, Position=[worker_position], department=worker_department, email=worker_email, Password=hashed, lateness=0, sickness=0, accidents=0, alt_pass=hashed)
+
+            try:
+
+                db.session.add(new_worker)
+                db.session.commit()
+                email_from = 'test_serv_python@outlook.com'
+                email_code = 'dupasraka0'
+                email_to = 'rybarczyk.ak@gmail.com'
+
+                try:
+                    message = f'''\\
+                    From: test_serv_python@outlook.com
+                    Subject: Test
+
+                    Hello, {worker_name}. Welcome to our service ! 
+                    Your password is {passcode.decode("utf-8")}.'''
+
+                    s = smtplib.SMTP('smtp.office365.com', 25)
+                    s.connect('smtp.office365.com', 587)
+                    s.starttls()
+                    s.login(email_from, email_code)
+                    s.sendmail(email_from, email_from, message)
+                    s.quit()
+
+                except Exception as e:
+                    print(e)
+
+                return redirect(url_for('workers_tab', name=session['username']))
+
+            except Exception as e:
+                print(e)
+                return 'Oops, something went wrong'
+        else:
+            return 'Oops email form is incorrect'
 
 @app.route('/add_article', methods=['POST', 'GET'])
 def add_article():
