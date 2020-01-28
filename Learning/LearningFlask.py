@@ -222,7 +222,7 @@ def add_worker():
                 db.session.add(new_worker)
                 db.session.commit()
                 email_from = 'test_serv_python@outlook.com'
-                email_code = 'dupasraka0'
+                email_code = 'xxxxx'
                 email_to = 'rybarczyk.ak@gmail.com'
 
                 try:
