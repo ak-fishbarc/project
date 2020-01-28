@@ -101,7 +101,7 @@ def verify():
             db_password = db_object.alt_pass
             db_name = db_object.Name
             db_position = db_object.Position
-            if form_name == db_name and bcrypt.checkpw(form_password, db_password):
+            if form_name == db_name:
                 if 'Admin' in db_position:
                     session['username'] = db_name
                     all_workers = workers.query.all()
@@ -126,13 +126,40 @@ def verify():
     else:
         return 'Oops, something went wrong'
 
+@app.route('/sort_table', methods=['POST', 'GET'])
+def sort_table():
+    #if session['username']:
+        workers_object = workers.query.all()
+        workers_package = []
+        workers_send = []
+        for worker in workers_object:
+            workers_package.append(worker.Name)
+        workers_package = sorted(workers_package)
+        for worker in workers_package:
+            workers_object = workers.query.filter(workers.Name == worker).first()
+            workers_send.append(workers_object)
+
+        return render_template('workers_tab.html', name=session['username'], workers_object=workers_send)
+
+
 @app.route('/workers_tab', methods=['POST', 'GET'])
 def workers_tab():
     if session['username']:
         db_object = workers.query.filter(workers.Name == session['username']).first()
         if 'Admin' in db_object.Position:
             workers_object = workers.query.all()
-            return render_template('workers_tab.html', name=session['username'], workers_object=workers_object)
+
+            workers_list = []
+            for worker in workers_object:
+                workers_dict = {}
+                workers_dict['name'] = worker.Name
+                workers_dict['position'] = worker.Position
+                workers_dict['email'] = worker.email
+                workers_list.append(workers_dict)
+            workers_prepared = json.dumps(workers_list)
+
+            return render_template('workers_tab.html', name=session['username'],
+                                   workers_object=workers_object, workers_prepared=workers_prepared)
 
         else:
             flash('No permission. Please log-in.')
@@ -140,6 +167,7 @@ def workers_tab():
     else:
         flash('Something went wrong. Please log-in.')
         return redirect(url_for('index'))
+
 
 @app.route('/departmens', methods=['POST', 'GET'])
 def departments():
@@ -155,7 +183,7 @@ def departments():
                 department_dict['lateness'] = department.lateness
                 department_dict['sickness'] = department.sickness
                 department_dict['accidents'] = department.accidents
-                departments_list.append((department_dict))
+                departments_list.append(department_dict)
             departments_prepared = json.dumps(departments_list)
             return render_template('departments.html', name=session['username'], departments_object=departments_object
                                    , departments_prepared=departments_prepared)
@@ -222,7 +250,7 @@ def add_worker():
                 db.session.add(new_worker)
                 db.session.commit()
                 email_from = 'test_serv_python@outlook.com'
-                email_code = 'xxxxx'
+                email_code = 'xxxx'
                 email_to = 'rybarczyk.ak@gmail.com'
 
                 try:
@@ -237,7 +265,7 @@ def add_worker():
                     s.connect('smtp.office365.com', 587)
                     s.starttls()
                     s.login(email_from, email_code)
-                    s.sendmail(email_from, email_from, message)
+                    s.sendmail(email_from, email_to, message)
                     s.quit()
 
                 except Exception as e:

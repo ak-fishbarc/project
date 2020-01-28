@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTaurant App</title>
+    <style>
+        .workerssheet{
+        border:2px solid black;
+        margin: 5px;
+        }
+        th {
+        border:2px inset grey;
+        background-color:lightgrey;
+        }
+        td {
+        text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+<form action="/add_worker" method="POST">
+    <p>Worker Name:</p>
+    <input type="text" name="name" required>
+    <p>Worker Position:</p>
+    <input type="text" name="position" required>
+    <p>Worker Department:</p>
+    <input type="text" name="department" required>
+    <p>Worker E-mail:</p>
+    <input type="email" name="email" required>
+    <input type="submit" value="Add Worker">
+</form>
+<p>Sort workers by:</p>
+<form action="/sort_table" method="POST">
+    <input type="submit" value="Name">
+</form>
+
+<table class="workerssheet">
+    {% for worker in workers_object %}
+    <tr>
+        <th class="NameTab">Name: {{ worker.Name }}</th>
+        <th>Position: {{ worker.Position }}</th>
+        <th>E-mail: {{ worker.email }}</th>
+    </tr>
+    <tr>
+        <th>Lateness:</th>
+        <th>Sickness:</th>
+        <th>Accidents:</th>
+    </tr>
+    <tr>
+        <td> {{ worker.lateness }} </td>
+        <td> {{ worker.sickness }} </td>
+        <td> {{ worker.accidents }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
