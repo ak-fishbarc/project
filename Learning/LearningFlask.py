@@ -101,7 +101,7 @@ def verify():
             db_password = db_object.alt_pass
             db_name = db_object.Name
             db_position = db_object.Position
-            if form_name == db_name:
+            if form_name == db_name and bcrypt.checkpw(form_password, db_password):
                 if 'Admin' in db_position:
                     session['username'] = db_name
                     all_workers = workers.query.all()
