@@ -7,6 +7,7 @@ My goal is to become full stack developer, polyglot with strong skills and knowl
 
 Please see:<br/>
 Code snippets for clear and short pieces of code.<br/>
+Learning I contains Flask w/ MongoDB.<br/>
 Learning contains my progress on learning Flask w/ Postgres and D3, JS, HTML5, CSS3.<br/>
 No-Gui is a smaller project not using any GUI. <br/>
 PyQt5 is the bigger project. <br/>
