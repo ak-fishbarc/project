@@ -1,0 +1,19 @@
+body{
+background-image:linear-gradient(to right, blue, lightblue);
+}
+form {
+margin-left:25%;
+margin-right:25%;
+background-color:lightgrey;
+border:3px outset black;
+box-shadow: -5px -5px 12px 0px rgba(50, 50, 50, 1);
+width:50%;
+text-align:center;
+}
+form input{
+margin-bottom:10px;
+border:2px inset black;
+}
+input[type=submit]:hover{
+background-color:lightgrey;
+}

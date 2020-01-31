@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base_standard.html' %}
+<head>
+    {% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login_page.css') }}">
+    {% endblock %}
+</head>
+<body>
+{% block body %}
+<form action="/login_page" methods="POST">
+    <p>Name: </p>
+    <input type="text" name="name"><br>
+    <p>Password: </p>
+    <input type="password" name="password"><br>
+    <input class="submit" type="submit" value="Login">
+</form>
+{% endblock %}
+</body>
+</html>

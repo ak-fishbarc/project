@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base_standard.html' %}
+<head>
+</head>
+<body>
+{% block body %}
+    <div class="left_display">
+        <ul class="menu_bar">
+            {% if not session["username"] %}
+            <li><a class="menu_tab" href="{{ url_for('login_page') }}">Login</a></li>
+            <li><a class="menu_tab" href="{{ url_for('register_page') }}">Register</a></li>
+            {% else %}
+            <li><a class="menu_tab" href="{{ url_for('logout_page') }}">Logout</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="main_display">
+        <article>Some text here to indicate this</article>
+    </div>
+
+    <div class="right_display">
+        <p>Extra content</p>
+        <button>Not working button for you</button>
+    </div>
+{% endblock %}
+</body>
+</html>

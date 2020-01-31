@@ -1,0 +1,31 @@
+body{
+background-image:linear-gradient(to right, blue, lightblue);
+}
+.main_display{
+width:50%;
+background-color:lightgrey;
+float:left;
+}
+.left_display{
+width:25%;
+background-color:white;
+float:left;
+}
+.right_display{
+width:25%;
+background-color:white;
+float:right;
+}
+.menu_bar{
+list-style-type:none;
+padding-left:0;
+}
+.menu_bar li{
+margin:15px;
+}
+.menu_tab{
+background-color:lightgrey;
+padding:2px;
+border:2px outset grey;
+border-radius:5px;
+}

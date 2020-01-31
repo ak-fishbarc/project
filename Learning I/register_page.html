@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base_standard.html' %}
+<head>
+ {% block css %}
+    <script src="static/check_form.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login_page.css') }}">
+ {% endblock %}
+</head>
+<body>
+{% block body %}
+<form id="register_form" action="/register_user" onsubmit="event.preventDefault(); check_form();" method="POST">
+    <p>Name:</p>
+    <input type="text" name="name" required><br>
+    <p>Email:</p>
+    <input type="email" name="email" required><br>
+    Password:
+    <p id="show_message_pass"></p>
+    <input id="passcode_check" type="password" name="passcode" required><br>
+    Confirm Password:
+    <p id="show_message_conf"></p>
+    <input id="repasscode_check" type="password" name="repasscode" required><br>
+    <input type="submit" value="Register">
+</form>
+{% endblock %}
+</body>
+</html>

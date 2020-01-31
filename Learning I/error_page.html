@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base_standard.html' %}
+<head>
+
+</head>
+<body>
+{% block body %}
+    {% if error_code==registration %}
+        <p>Something went wrong with the registration process. Please try again.</p>
+    {% endif %}
+{% endblock %}
+</body>
+</html>
