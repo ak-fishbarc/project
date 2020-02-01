@@ -9,20 +9,10 @@ function check_form(){
     var digitcheck = redigit.test(passcode_field.value);
     var uppercheck = reupper.test(passcode_field.value);
     var lowercheck = relower.test(passcode_field.value);
-
+    var confirmcheck = false;
+    var passcheck = false;
     if(passcode_field.value == repasscode_field.value){
-        if(digitcheck === true && uppercheck === true && lowercheck === true){
-            document.getElementById("register_form").submit();
-            return true;
-        }else{
-        passcode_field.style.backgroundColor = "#FAEBD7";
-        repasscode_field.style.backgroundColor = "#FAEBD7";
-        passcode_field.style.border = "1px solid red";
-        repasscode_field.style.border = "1px solid red";
-        flash_message = document.getElementById("show_message_pass")
-        flash_message.style.color = 'red';
-        flash_message.innerHTML = 'Password needs to contain one digit, uppercase letter and lowercase letter!'
-        }
+        confirmcheck = true;
     }else{
         passcode_field.style.backgroundColor = "#FAEBD7";
         repasscode_field.style.backgroundColor = "#FAEBD7";
@@ -34,4 +24,19 @@ function check_form(){
         return false;
     }
 
+    if(digitcheck === true && uppercheck === true && lowercheck === true){
+        passcheck = true;
+    }else{
+        passcode_field.style.backgroundColor = "#FAEBD7";
+        repasscode_field.style.backgroundColor = "#FAEBD7";
+        passcode_field.style.border = "1px solid red";
+        repasscode_field.style.border = "1px solid red";
+        flash_message = document.getElementById("show_message_pass")
+        flash_message.style.color = 'red';
+        flash_message.innerHTML = 'Password needs to contain one digit, uppercase letter and lowercase letter!'
+        }
+    if(passcheck === true && confirmcheck === true){
+    document.getElementById("register_form").submit();
+        return true;
+    }
 }
