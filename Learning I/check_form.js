@@ -38,7 +38,7 @@ function check_form(){
         }
     
     if(passcheck === true && confirmcheck === true){
-    document.getElementById("register_form").submit();
+        document.getElementById("register_form").submit();
         return true;
     }
 }
