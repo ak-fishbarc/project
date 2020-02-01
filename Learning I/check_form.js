@@ -11,6 +11,7 @@ function check_form(){
     var lowercheck = relower.test(passcode_field.value);
     var confirmcheck = false;
     var passcheck = false;
+    
     if(passcode_field.value == repasscode_field.value){
         confirmcheck = true;
     }else{
@@ -35,6 +36,7 @@ function check_form(){
         flash_message.style.color = 'red';
         flash_message.innerHTML = 'Password needs to contain one digit, uppercase letter and lowercase letter!'
         }
+    
     if(passcheck === true && confirmcheck === true){
     document.getElementById("register_form").submit();
         return true;
