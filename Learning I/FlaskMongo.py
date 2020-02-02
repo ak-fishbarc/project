@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, jsonify, request, render_template, session
+from flask import Flask, redirect, url_for, jsonify, request, render_template, session, flash
 from flask_pymongo import PyMongo
 
 import smtplib
@@ -7,11 +7,23 @@ import bcrypt
 import random as rnd
 import re
 
-
 app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/general_db'
 app.secret_key = 'SomethingKey'
 mongo = PyMongo(app)
+
+@app.route('/ajax_check', methods=['GET', 'POST'])
+def ajax_check():
+    if request.method == 'POST':
+        check_value = request.args.get('value')
+        tag_name = request.args.get('tag')
+        find_value = mongo.db.general_db.find_one({tag_name: check_value})
+        if find_value:
+            return 'One'
+        else:
+            return 'Zero'
+    else:
+        return 'Nothing'
 
 @app.route('/', methods=['GET'])
 def main_page():
@@ -47,9 +59,9 @@ def register_user():
             while len(authenticate) < 4:
                 authenticate += signs[rnd.randint(0, len(signs) - 1)]
             try:
-                email_from = 'somevalue'
-                email_pass = 'somevalue'
-                email_to = 'somevalue'
+                email_from = 'xxxx'
+                email_pass = 'xxxx'
+                email_to = 'xxxx'
                 message = EmailMessage()
                 message['Subject'] = f'Welcome to Learnguage'
                 message['From'] = f'{email_from}'
@@ -66,17 +78,31 @@ Please authenticate your account with this code:
                 server.send_message(message)
                 server.quit()
 
-                new_user = mongo.db.general_db.insert({'name': user_name, 'email': user_email, 'password': hashed,\
-                                                       'authorized': user_auth, 'auth_code': authenticate})
+                new_user = mongo.db.general_db.insert_one({'name': user_name, 'email': user_email, 'password': hashed,\
+                                                       'authenticated': user_auth, 'auth_code': authenticate})
                 session['username'] = user_name
             except Exception:
-                return render_template('error_page.html', error_code='registration')
+                return render_template('error_page.html', error_code=['registration'])
             finally:
-                return redirect(url_for('main_page'))
+                return render_template('validate_account.html')
         else:
-            return 'Oops something went wrong'
+            return render_template('error_page.html', error_code=['registration'])
     else:
-        return 'Oops something went wrong'
+        return render_template('error_page.html', error_code=['request'])
+
+@app.route('/validate_account', methods=['GET', 'POST'])
+def validate_account():
+    if request.method == 'POST':
+        if session['username']:
+            code = request.form['code']
+            user_auth = mongo.db.general_db.find_one({'name': session['username']})
+            if code == user_auth['auth_code']:
+                return 'Good job !'
+            else:
+                return render_template('validate_account.html', message=['Wrong code. Please try again.'])
+        else:
+            return render_template('error_page.html', error_code=['authentication'])
+    return render_template('error_page.html', error_code=['request'])
 
 if __name__ == '__main__':
     app.run('127.0.0.1', 8333, debug=True)

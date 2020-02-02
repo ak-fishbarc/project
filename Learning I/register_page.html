@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 {% extends 'base_standard.html' %}
 <head>
  {% block css %}
@@ -10,10 +10,13 @@
 <body>
 {% block body %}
 <form id="register_form" action="/register_user" onsubmit="event.preventDefault(); check_form();" method="POST">
-    <p>Name:</p>
-    <input type="text" name="name" required><br>
-    <p>Email:</p>
-    <input type="email" name="email" required><br>
+    <br>
+    Name:
+    <p id="show_message_name"></p>
+    <input id="name" type="text" name="name" onchange="check_value('name', 'show_message_name', 'name')" required><br>
+    Email:
+    <p id="show_message_email"></p>
+    <input id="email" type="email" name="email" onchange="check_value('email', 'show_message_email', 'email')" required><br>
     Password:
     <p id="show_message_pass"></p>
     <input id="passcode_check" type="password" name="passcode" required><br>

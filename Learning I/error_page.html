@@ -2,13 +2,17 @@
 <html lang="en">
 {% extends 'base_standard.html' %}
 <head>
-
+{% block css %}
+{% endblock %}
 </head>
 <body>
 {% block body %}
-    {% if error_code==registration %}
-        <p>Something went wrong with the registration process. Please try again.</p>
-    {% endif %}
+    <script src="static/error_code.js"></script>
+    <p id="display_error_msg"></p>
+    <script>
+        display_message({{ error_code|safe }});
+    </script>
+
 {% endblock %}
 </body>
 </html>
