@@ -23,7 +23,7 @@ def ajax_check():
         else:
             return 'Zero'
     else:
-        return 'Nothing'
+        return render_template('error_page.html', error_code=['request'])
 
 @app.route('/', methods=['GET'])
 def main_page():
