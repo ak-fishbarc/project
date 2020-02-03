@@ -13,14 +13,20 @@ function check_value(field, p, tag_name){
             if(server_data == 'One'){
                 display_in_p.innerHTML = field.slice(0, 1).toUpperCase() + field.slice(1) + " is already taken.";
                 document.getElementById(field).style.backgroundColor = "#FAEBD7";
-                keys[clear_key] = undefined;
+                keys[clear_key] = 'undefined';
+                console.log(keys)
             }else{
                 display_in_p.innerHTML = field.slice(0, 1).toUpperCase() + field.slice(1) + " is valid";
                 if(keys[clear_key] != field){
-                    keys.push(field);
-                    console.log(keys)
+                    if(keys.includes('undefined')){
+                        keys[keys.lastIndexOf('undefined')] = field;
+                    }else{
+                        keys.push(field);
+                        console.log(keys)
+                    }
                 }else{
                     keys[clear_key] = field;
+                    console.log(keys)
                 }
                 }
         }
