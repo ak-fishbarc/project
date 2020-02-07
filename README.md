@@ -6,6 +6,7 @@ Unfortunately, currently I have only 2 - 4 hours a day to spend on learning. <br
 My goal is to become full stack developer, polyglot with strong skills and knowledge of network programming and a bit of computer graphics. <br/>
 
 Please see:<br/>
+Undefined Go, Java, Node.js, Python. <br/>
 Code snippets for clear and short pieces of code.<br/>
 Learning I contains Flask w/ MongoDB.<br/>
 Learning contains my progress on learning Flask w/ Postgres and D3, JS, HTML5, CSS3.<br/>
